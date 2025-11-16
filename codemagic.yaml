@@ -9,11 +9,19 @@ workflows:
         - codemagic
       vars:
         XCODE_VERSION: "14.1"
-        JAVA_HOME: "/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home"
       flutter: stable
       xcode: latest
       cocoapods: default
     scripts:
+      - name: Setup Java 17
+        script: |
+          export JAVA_HOME=$(/usr/libexec/java_home -v 17 || /usr/libexec/java_home -v 17.0 || echo "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home")
+          echo "JAVA_HOME is set to: $JAVA_HOME"
+          java -version
+      - name: Configure Gradle for Java 17
+        script: |
+          JAVA_17_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home -v 17.0 2>/dev/null || echo "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home")
+          echo "org.gradle.java.home=$JAVA_17_HOME" >> android/gradle.properties
       - name: Get Flutter dependencies
         script: |
           flutter pub get
@@ -22,6 +30,7 @@ workflows:
           flutter pub run build_runner build --delete-conflicting-outputs
       - name: Build Android APK
         script: |
+          export JAVA_HOME=$(/usr/libexec/java_home -v 17 || /usr/libexec/java_home -v 17.0 || echo "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home")
           flutter build apk --release
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
