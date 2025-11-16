@@ -1,51 +1,112 @@
-name: Build Emergency Response APK
+name: Build APK
 
 on:
-  workflow_dispatch:  # Allows manual triggering
   push:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '11'
-        
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.38.1'
-        channel: 'stable'
-        
-    - name: Get dependencies
-      run: |
-        cd app
-        flutter pub get
-        
-    - name: Generate code
-      run: |
-        cd app
-        flutter pub run build_runner build --delete-conflicting-outputs
-        
-    - name: Build APK
-      run: |
-        cd app
-        flutter build apk --debug
-        
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: emergency-response-apk
-        path: app/build/app/outputs/flutter-apk/app-debug.apk
-        retention-days: 30
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'  # Use latest stable version
+          cache: true
+
+      - name: Verify Flutter installation
+        run: flutter doctor -v
+
+      - name: Check app directory
+        run: |
+          if [ ! -d "app" ]; then
+            echo "ERROR: app directory not found!"
+            ls -la
+            exit 1
+          fi
+          echo "✓ app directory found"
+
+      - name: Get Flutter dependencies
+        working-directory: ./app
+        run: |
+          flutter pub get
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Failed to get dependencies"
+            exit 1
+          fi
+
+      - name: Generate code (Hive adapters)
+        working-directory: ./app
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs || echo "Warning: Code generation had issues, continuing..."
+        continue-on-error: true  # Continue even if code generation has issues
+
+      - name: Build APK (Debug)
+        working-directory: ./app
+        run: |
+          flutter build apk --debug
+          if [ ! -f "build/app/outputs/flutter-apk/app-debug.apk" ]; then
+            echo "ERROR: Debug APK not found after build!"
+            exit 1
+          fi
+          echo "✓ Debug APK built successfully"
+
+      - name: Build APK (Release)
+        working-directory: ./app
+        run: flutter build apk --release
+        continue-on-error: true  # Continue if release build fails
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: APK Build Summary
+        run: |
+          echo "## 📱 APK Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Debug APK" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/app/outputs/flutter-apk/app-debug.apk" ]; then
+            SIZE=$(du -h app/build/app/outputs/flutter-apk/app-debug.apk | cut -f1)
+            echo "✅ **Status:** Built successfully" >> $GITHUB_STEP_SUMMARY
+            echo "📦 **Size:** $SIZE" >> $GITHUB_STEP_SUMMARY
+            echo "📍 **Location:** app/build/app/outputs/flutter-apk/app-debug.apk" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Status:** Build failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Release APK" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/app/outputs/flutter-apk/app-release.apk" ]; then
+            SIZE=$(du -h app/build/app/outputs/flutter-apk/app-release.apk | cut -f1)
+            echo "✅ **Status:** Built successfully" >> $GITHUB_STEP_SUMMARY
+            echo "📦 **Size:** $SIZE" >> $GITHUB_STEP_SUMMARY
+            echo "📍 **Location:** app/build/app/outputs/flutter-apk/app-release.apk" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Status:** Not built (optional)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 Download APKs" >> $GITHUB_STEP_SUMMARY
+          echo "APKs are available in the **Artifacts** section above." >> $GITHUB_STEP_SUMMARY
