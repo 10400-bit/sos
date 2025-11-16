@@ -1,0 +1,47 @@
+name: emergency_response
+description: Offline Emergency Response System Mobile App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI & Animations
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.3.0
+  
+  # State Management
+  provider: ^6.1.0
+  
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # HTTP & Networking
+  http: ^1.1.0
+  
+  # Location Services
+  geolocator: ^11.0.0
+  permission_handler: ^11.1.0
+  
+  # Phone & SMS
+  url_launcher: ^6.2.2
+  
+  # QR Code
+  qr_flutter: ^4.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.7
+
+flutter:
+  uses-material-design: true
+

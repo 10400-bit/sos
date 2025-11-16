@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}QR Code - Emergency Response System{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-6">
+    <h2 class="text-3xl font-bold mb-6">QR Code Generated</h2>
+    
+    <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-semibold mb-2">{{ user.name }}</h3>
+            <p class="text-gray-400">Vehicle: {{ user.vehicle_number }}</p>
+        </div>
+        
+        <div class="flex justify-center mb-6">
+            {% if user.qr_code_path %}
+            <img src="{% url 'view_qr' user.id %}?image=true" alt="QR Code" 
+                class="border-4 border-white rounded-lg p-4 bg-white">
+            {% else %}
+            <div class="text-gray-400">QR Code not found</div>
+            {% endif %}
+        </div>
+        
+        <div class="bg-gray-700 rounded-lg p-4 mb-4">
+            <h4 class="font-semibold mb-2">User Information:</h4>
+            <ul class="space-y-2 text-sm">
+                <li><strong>Name:</strong> {{ user.name }}</li>
+                <li><strong>Phone:</strong> {{ user.phone }}</li>
+                <li><strong>Blood Group:</strong> {{ user.blood_group }}</li>
+                <li><strong>Emergency Contact 1:</strong> {{ user.emergency_contact_1 }}</li>
+                {% if user.emergency_contact_2 %}
+                <li><strong>Emergency Contact 2:</strong> {{ user.emergency_contact_2 }}</li>
+                {% endif %}
+                <li><strong>Vehicle Number:</strong> {{ user.vehicle_number }}</li>
+            </ul>
+        </div>
+        
+        <div class="flex space-x-4">
+            <a href="{% url 'index' %}" 
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-center transition duration-200">
+                Back to Dashboard
+            </a>
+            <a href="{% url 'register' %}" 
+                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg text-center transition duration-200">
+                Register Another
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

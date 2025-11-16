@@ -1,0 +1,51 @@
+name: Build Emergency Response APK
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.38.1'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: |
+        cd app
+        flutter pub get
+        
+    - name: Generate code
+      run: |
+        cd app
+        flutter pub run build_runner build --delete-conflicting-outputs
+        
+    - name: Build APK
+      run: |
+        cd app
+        flutter build apk --debug
+        
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: emergency-response-apk
+        path: app/build/app/outputs/flutter-apk/app-debug.apk
+        retention-days: 30
+

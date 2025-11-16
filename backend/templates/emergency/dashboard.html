@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Emergency Response System{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6">
+    <h2 class="text-3xl font-bold mb-6">Emergency Dashboard</h2>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">Total Users</p>
+                    <p class="text-3xl font-bold text-blue-400">{{ total_users }}</p>
+                </div>
+                <div class="text-4xl">👥</div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">Total Alerts</p>
+                    <p class="text-3xl font-bold text-red-400">{{ total_alerts }}</p>
+                </div>
+                <div class="text-4xl">🚨</div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">Pending Alerts</p>
+                    <p class="text-3xl font-bold text-yellow-400">{{ pending_alerts }}</p>
+                </div>
+                <div class="text-4xl">⚠️</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Alerts -->
+    <div class="bg-gray-800 rounded-lg border border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-700">
+            <h3 class="text-xl font-bold">Recent Emergency Alerts</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Time</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Severity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Location</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {% for alert in recent_alerts %}
+                    <tr class="hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ alert.timestamp|date:"H:i:s" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ alert.user.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-500/20 text-red-400">
+                                {{ alert.get_emergency_type_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                {% if alert.severity == 'critical' %}bg-red-500/20 text-red-400
+                                {% elif alert.severity == 'high' %}bg-orange-500/20 text-orange-400
+                                {% elif alert.severity == 'medium' %}bg-yellow-500/20 text-yellow-400
+                                {% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                                {{ alert.get_severity_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {{ alert.gps_latitude }}, {{ alert.gps_longitude }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                {% if alert.status == 'pending' %}bg-yellow-500/20 text-yellow-400
+                                {% elif alert.status == 'responded' %}bg-blue-500/20 text-blue-400
+                                {% else %}bg-green-500/20 text-green-400{% endif %}">
+                                {{ alert.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">No alerts yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-refresh every 5 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 5000);
+</script>
+{% endblock %}
+

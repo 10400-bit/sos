@@ -1,0 +1,118 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Django
+*.log
+local_settings.py
+/media
+/staticfiles
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+*.g.dart
+*.freezed.dart
+
+# Android
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+.gradle/
+local.properties
+*.iml
+.idea/
+*.hprof
+.cxx/
+.externalNativeBuild
+.cxx/
+local.properties
+
+# iOS
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/*sync/
+.sconsign.dblite
+.tags*
+**/.vagrant/
+**/DerivedData/
+**/Icon?
+**/Pods/
+**/.symlinks/
+**/profile
+**/xcuserdata
+**/.xccheckout
+**/xcshareddata
+**/*.xccheckout
+**/*.moved-aside
+**/*.pbxuser
+**/*.mode1v3
+**/*.mode2v3
+**/*.perspectivev3
+**/*.xcuserstate
+**/.xcscmblueprint
+**/ios/.generated/
+**/Flutter/App.framework
+**/Flutter/Flutter.framework
+**/Flutter/Flutter.podspec
+**/Flutter/Generated.xcconfig
+**/Flutter/ephemeral
+**/Flutter/app.flx
+**/Flutter/app.zip
+**/Flutter/flutter_assets/
+**/Flutter/flutter_export_environment.sh
+**/ServiceDefinitions.json
+**/Runner.ipa
+**/Flutter/.last_build_id
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# QR Codes (optional - you may want to keep these)
+# qr_codes/*.png
+
+# Flutter SDK (if included)
+flutter/
+
+# Environment variables
+.env
+.env.local
+
+# OS
+Thumbs.db
+.DS_Store

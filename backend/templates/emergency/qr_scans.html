@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}QR Scans - Emergency Response System{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6">
+    <h2 class="text-3xl font-bold mb-6">QR Code Scan Logs</h2>
+    
+    <div class="bg-gray-800 rounded-lg border border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-700">
+            <h3 class="text-xl font-bold">Recent Scans</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Timestamp</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Vehicle</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Phone</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Blood Group</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Scanner Info</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {% for scan in scans %}
+                    <tr class="hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ scan.scanned_at|date:"Y-m-d H:i:s" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ scan.user.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ scan.user.vehicle_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ scan.user.phone }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ scan.user.blood_group }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ scan.scanner_info|default:"N/A" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">No scans recorded yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
